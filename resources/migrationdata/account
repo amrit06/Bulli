@@ -1,0 +1,8 @@
+cash: 		date, item, income, expense, balance, gst, category, invoice
+c ben bank:	date, itme, income, expense, balance, gst, category, invoice
+rfs acc:	date, item, income, expense, balance, gst, category
+mas car:	date, item, income, expense, balance, gst, category, who, invoice
+d ben bank: date, item, income, expense, balance, gst, category, invoice
+social act: date, item, income, expense, balance, gst, category
+			
+help: catrgory
