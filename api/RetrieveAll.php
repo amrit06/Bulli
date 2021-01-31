@@ -11,11 +11,11 @@ if(isset($_GET['table'])){
     
     $Message= $_GET['table'];
     $conn = new Database();
-    $db = $conn->connect();
+    $db = $conn->connect('New_Bulli.db');
     $table = new Table($db);
     $result = $table->retrieveall($Message);
 
-   print_r($result);
+    print_r($result);
 }
 
 ?>

@@ -370,7 +370,6 @@ $("nav a").each(function() {
 			}
 			?>
 		
-		
        </body>
 
 

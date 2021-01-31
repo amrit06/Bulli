@@ -125,7 +125,7 @@ $("nav a").each(function() {
 <br><br><br>
             <div class="form">
             <div class="form">
-              <form method="POST" action="generate.php">
+              <form method="POST" action="<?php echo $_SERVER["PHP_SELF"];?>">
               <section class="inputValues">
                     <label for="date"> Enter the month in the year you want to see:</label>
                     <br><br>

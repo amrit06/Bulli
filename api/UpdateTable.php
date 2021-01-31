@@ -10,6 +10,10 @@ $table = "";
 
 //http://px.com/pages/cashaccount.php?date=2020-10-07&item=sdf+sfsdf+ds&income=12.90&expense=&category=cat3
 
+//update table not only updates the row but it also captures waht was the last balance and perform 
+// arithmetic on that row and updates it. and it gets all the rows that comes afterward and changes their balance according 
+// to new balance including calculating their row absed on their income and expenses
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $args = [];
     foreach($_POST as $k=>$v){
@@ -99,6 +103,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
 }
-
 
 ?>

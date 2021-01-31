@@ -7,108 +7,21 @@ require_once './PHPExcel/Classes/PHPExcel/IOFactory.php';
 include_once 'Database.php';
 include_once '../model/Table.php';
 
-
-/* function getDirectoryForInvoice($pdate)
-{
-    $date_arr = array("01/01/2017", "01/01/2018", "01/01/2019", "01/01/2020");
-    $dir = "";
-
-    $date_arr[0] = str_replace('/', '-', $date_arr[0]);
-    $date_arr[1] = str_replace('/', '-', $date_arr[1]);
-    $date_arr[2] = str_replace('/', '-', $date_arr[2]);
-    $date_arr[3] = str_replace('/', '-', $date_arr[3]);
-    $date = str_replace('/', '-', $pdate);
-
-    $Sstartdate = date('Y-m-d', strtotime($date_arr[0]));
-    $Estartdate = date('Y-m-d', strtotime($date_arr[1]));
-    $Nstartdate = date('Y-m-d', strtotime($date_arr[2]));
-    $Tstartdate = date('Y-m-d', strtotime($date_arr[3]));
-    $date = date('Y-m-d', strtotime($date));
-
-    if (($date > $Sstartdate) &&  ($date < $Estartdate)) {
-        $dir = "./resource/invoices2017-18/";
-    } else if (($date > $Estartdate) &&  ($date < $Nstartdate)) {
-        $dir = "./resource/invoices2018-19/";
-    } else if (($date > $Nstartdate) &&  ($date < $Tstartdate)) {
-        $dir = "./resource/invoices2019-20/";
-    }
-
-    return $dir;
-}
-
-function displayInvoice($file)
-{
-    if (file_exists($file)) {
-        echo '
-        <td>
-    <object data="' . $file . '" type="application/pdf" width="150" height="100"></object>
-     </td>
-    ';
-    } else {
-        echo '
-        <td>
-            couldnt find ' . $file . '
-        </td>
-    ';
-    }
-}
-*/
-
-//old add the data
-/* 
-for ($x = 0; $x < $spreadcounter; $x++) {
-        echo '<br><table width="100%" cellpadding="3" cellspacing="0"><tr>';
-        echo '<td style="background:#000; color:#fff;"> Table </td>';
-        for ($row = 0; $row < sizeof($array[$x]); $row++) {
-            echo '<tr>';
-            $filedir = "";
-            for ($column = 0; $column < sizeof($array[$x][$row]); $column++) {
-
-                if ($column == 0) {
-                    $filedir = getDirectoryForInvoice($array[$x][$row][$column]);
-                    echo '<td>' . $array[$x][$row][$column] . '</td>';
-                } else if ($column ==  sizeof($array[$x][$row]) - 1) {
-                    if (!empty($array[$x][$row][$column])) {
-
-
-
-                        foreach ($_GET as $k => $arg) {
-                            $args[$k] = $arg;
-                            echo $arg;
-                        }
-
-                        echo $table_name . '\n';
-                        echo $date . '\n';
-                        $conn = new Database();
-                        $db = $conn->connect("Bulli.db");
-                        $table = new Table($db);
-                        $result = $table->insertIntoTable($table_name, $args);
-                        displayinvoicesfromdir($array[$x][$row][$column]);
-                        
-                    }
-                } else {
-                    echo '<td>' . $array[$x][$row][$column] . '</td>';
-                }
-            }
-            echo '</tr>';
-        }
-        echo '</table>';
-        // change table
-} 
-*/
-
+// to retreive file
 function retrieveFile($filename)
 {
     $file = "/var/www/project/Bulli/resources/migrationdata/allinvoices/" . $filename;
 
     if (file_exists($file)) {
-        
+
         return $file;
     } else {
         return "couldn't find file";
     }
 }
 
+
+// fetch id for user
 function fetchid($table_name, $id, $wherecolumn, $value)
 {
     $conn = new Database();
@@ -137,6 +50,7 @@ function fetchid($table_name, $id, $wherecolumn, $value)
     }
 }
 
+//migrate user given a cards. cards have user in them
 function fetchandmigrateuser($spreadsheet)
 {
     $conn = new Database();
@@ -175,7 +89,7 @@ function fetchandmigrateuser($spreadsheet)
     $db->close();
 }
 
-
+// to migrate each table
 function migratetable($table_name, $columns, $values)
 {
     $args = [];
@@ -210,8 +124,9 @@ if (isset($_GET['migrate'])) {
         $spreadcounter = 0;
         $objPHPExcel = PHPExcel_IOFactory::load($resourcepath);
 
+        // read from each speadsheet 
         foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
-            $worksheetTitle     = $worksheet->getTitle();
+            $worksheetTitle     = $worksheet->getTitle();   // get file name didnt needed might need for dynamic allocation
             $highestRow         = $worksheet->getHighestRow(); // get no of rows per spreadsheet
             $highestColumn      = $worksheet->getHighestColumn(); // get no of columns per spreadsheet
             $highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
@@ -219,8 +134,6 @@ if (isset($_GET['migrate'])) {
 
             $rowcounter = 0;
             for ($row = 1; $row <= $highestRow; ++$row) {
-
-
                 if ($row < 2) {
                     $worksheet->removeRow($row);
                 } else {
@@ -239,6 +152,7 @@ if (isset($_GET['migrate'])) {
                     }
                 }
             }
+
             $spreadcounter++;
         }
 
@@ -249,6 +163,8 @@ if (isset($_GET['migrate'])) {
         for ($x = (sizeof($array) - 1); $x >= 0; $x--) {
             $table_name = "";
             $columns = array();
+            
+            // based on different table use different column
             switch ($x) {
                 case 0:
                     $table_name = "Cash";
@@ -284,7 +200,7 @@ if (isset($_GET['migrate'])) {
                     break;
             }
 
-            //echo sizeof($array[$x]);
+            //migration happens here different table ahs different sceanro
             for ($row = 0; $row < sizeof($array[$x]) - 2; $row++) {
                 if ($table_name == "Category") {
                     migratetable($table_name, $columns, $array[$x][$row]);
@@ -314,7 +230,9 @@ if (isset($_GET['migrate'])) {
                     migratetable($table_name, $columns, $array[$x][$row]);
                 }
             }
+
         }
+
         echo "Migration completed!";
     }
 }
